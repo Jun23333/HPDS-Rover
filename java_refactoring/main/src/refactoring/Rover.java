@@ -1,7 +1,10 @@
 package refactoring;
 
+import javafx.geometry.Pos;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -9,6 +12,7 @@ public class Rover {
 	private Heading heading;
 	private Position position;
 	private Map<Order, Action> actions = new HashMap<>();
+	private Map<String, String> mapa = new HashMap<>();
 
 	public Rover(String facing, int x, int y) {
 		this(Heading.of(facing),new Position(x,y));
@@ -52,13 +56,30 @@ public class Rover {
 		void execute();
 	}
 
+	public void addBlock(Position block) {
+		position.addBlock(block);
+	}
+
+	public void addBlock(List<Position> list) {
+		for (Position position: list) {
+			addBlock(position);
+		}
+	}
+
 	public static class Position {
 		private final int x;
 		private final int y;
+		private Map<String, String> mapa = new HashMap<>();
 
 		public Position(int x, int y) {
 			this.x = x;
 			this.y = y;
+		}
+
+		public Position(int x, int y, Map mapa) {
+			this.x = x;
+			this.y = y;
+			this.mapa = mapa;
 		}
 
 		public Position forward(Heading heading) {
@@ -70,11 +91,11 @@ public class Rover {
 		}
 
 		public Position move(Heading heading, int i) {
-			if(heading.equals(Heading.North)) return new Position(this.x,this.y+i);
-			if(heading.equals(Heading.East)) return new Position(this.x+i,this.y);
-			if(heading.equals(Heading.South)) return new Position(this.x,this.y-i);
-			if(heading.equals(Heading.West)) return new Position(this.x-i,this.y);
-			return null;
+			if(heading.equals(Heading.North) && mapa.get((this.x)+"y"+(this.y+i)) == null) return new Position(this.x,this.y+i,this.mapa);
+			if(heading.equals(Heading.East) && mapa.get((this.x+i)+"y"+(this.y)) == null) return new Position(this.x+i,this.y,this.mapa);
+			if(heading.equals(Heading.South) && mapa.get((this.x)+"y"+(this.y-i)) == null) return new Position(this.x,this.y-i,this.mapa);
+			if(heading.equals(Heading.West) && mapa.get((this.x-i)+"y"+(this.y)) == null) return new Position(this.x-i,this.y,this.mapa);
+			return new Position(this.x,this.y);
 		}
 
 		@Override
@@ -90,6 +111,10 @@ public class Rover {
 			return object != null && object.getClass() == Position.class;
 		}
 
+		public void addBlock(Position block) {
+			mapa.put(block.x+"y"+block.y,"block");
+			System.out.println(block.x+"y"+block.y);
+		}
 	}
 
 	public enum Order {
@@ -107,8 +132,6 @@ public class Rover {
 			return of(value.charAt(0));
 		}
 	}
-
-
 
 	public enum Heading {
 		North, East, South, West;
