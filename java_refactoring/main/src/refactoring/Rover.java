@@ -12,7 +12,6 @@ public class Rover {
 	private Heading heading;
 	private Position position;
 	private Map<Order, Action> actions = new HashMap<>();
-	private Map<String, String> mapa = new HashMap<>();
 
 	public Rover(String facing, int x, int y) {
 		this(Heading.of(facing),new Position(x,y));
@@ -95,7 +94,7 @@ public class Rover {
 			if(heading.equals(Heading.East) && mapa.get((this.x+i)+"y"+(this.y)) == null) return new Position(this.x+i,this.y,this.mapa);
 			if(heading.equals(Heading.South) && mapa.get((this.x)+"y"+(this.y-i)) == null) return new Position(this.x,this.y-i,this.mapa);
 			if(heading.equals(Heading.West) && mapa.get((this.x-i)+"y"+(this.y)) == null) return new Position(this.x-i,this.y,this.mapa);
-			return new Position(this.x,this.y);
+			return new Position(this.x,this.y,this.mapa);
 		}
 
 		@Override
@@ -113,7 +112,6 @@ public class Rover {
 
 		public void addBlock(Position block) {
 			mapa.put(block.x+"y"+block.y,"block");
-			System.out.println(block.x+"y"+block.y);
 		}
 	}
 

@@ -86,8 +86,10 @@ public class Rover__ {
 		Rover rover = new Rover(North, new Position(0, 0));
 		rover.addBlock(new Position(0,1));
 		rover.addBlock(new Position(1,0));
-		rover.go("FRF");
-		assertThat(rover.heading()).isEqualTo(East);
+		rover.addBlock(new Position(0,-1));
+		rover.addBlock(new Position(-1,0));
+		rover.go("FRFRFRF");
+		assertThat(rover.heading()).isEqualTo(West);
 		assertThat(rover.position()).isEqualTo(new Position(0,0));
 	}
 }
