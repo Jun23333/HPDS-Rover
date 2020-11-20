@@ -20,47 +20,36 @@ public class Rover {
 	}
 
 	public void go(Order... orders){
-		go(Arrays.stream(orders));
+		set(go(Arrays.stream(orders)));
 	}
+
+	public void set(ViewPoint viewPoint) {
+	    if (viewPoint == null) return;
+	    this.viewPoint = viewPoint;
+    }
 
 	public void go(String instructions) {
-		go(Arrays.stream(instructions.split("")).map(Order::of));
+		set(go(Arrays.stream(instructions.split("")).map(Order::of)));
 	}
 
-	private void go(Stream<Order> orders) {
-		orders.filter(Objects::nonNull).forEach(this::execute);
+	private ViewPoint go(Stream<Order> orders) {
+		return orders.filter(Objects::nonNull).reduce(this.viewPoint, this::execute, (v1,v2)->null);
 	}
 
-	private void execute(Order order) {
-		actions.get(order).execute();
+	private ViewPoint execute(ViewPoint v, Order o) {
+        return v != null ? actions.get(o).execute(v) : null;
 	}
 
 	private Map<Order,Action> actions = new HashMap<>();
 	{
-		actions.put(Order.Left, this::turnLeft);
-		actions.put(Order.Right, this::turnRight);
-		actions.put(Order.Forward, this::forward);
-		actions.put(Order.Backward, this::backward);
-	}
-
-	private void turnLeft() {
-		viewPoint = viewPoint.turnLeft();
-	}
-
-	private void turnRight() {
-		viewPoint = viewPoint.turnRight();
-	}
-
-	private void forward() {
-		viewPoint = viewPoint.forward();
-	}
-
-	private void backward() {
-		viewPoint = viewPoint.backward();
+		actions.put(Order.Left, ViewPoint::turnLeft);
+		actions.put(Order.Right, ViewPoint::turnRight);
+		actions.put(Order.Forward, ViewPoint::forward);
+		actions.put(Order.Backward, ViewPoint::backward);
 	}
 
 	public interface Action {
-		void execute();
+		ViewPoint execute(ViewPoint viewPoint);
 	}
 
 	public enum Order {
